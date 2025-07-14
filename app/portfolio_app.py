@@ -6,6 +6,9 @@ import numpy as np
 import plotly.express as px
 import cv2
 
+# Startup message for debugging
+st.write("🚀 App loading... Please wait for model initialization.")
+
 # ✅ Add parent directory to Python path BEFORE importing from src
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.inference import load_model, predict_image, predict_webcam, get_detection_summary
@@ -152,19 +155,30 @@ body, .main, .stApp {
 """, unsafe_allow_html=True)
 
 
-
 # 📊 Model Status with Animation
 @st.cache_resource
 def load_cached_model():
     model_path = "app/models/best.pt"
     if not os.path.exists(model_path):
+        st.error("Model file not found! Please upload app/models/best.pt. If your model is too large for GitHub, see the deployment guide for instructions to download it at runtime.")
         return None
     try:
-        return load_model(model_path)
+        model = load_model(model_path)
+        if model is not None:
+            st.success("✅ Model loaded successfully!")
+        return model
     except Exception as e:
         st.error(f"Error loading model: {e}")
         return None
+
 model = load_cached_model()
+
+# Show model status in sidebar
+if model is not None:
+    st.sidebar.success("✅ Model Ready")
+else:
+    st.sidebar.error("❌ Model Not Available")
+    st.sidebar.info("💡 Upload your model file to app/models/best.pt")
 
 # 🎛️ Enhanced Sidebar with Premium Design
 with st.sidebar:
@@ -194,21 +208,27 @@ with st.sidebar:
     with col2:
         st.metric("Detection Rate", "94.2%", "+2.1%")
     
-    # 🔍 Detection Classes Info
-    st.markdown("""
-    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
-        <h4 style="color: white; margin: 0;">🔍 Detection Classes</h4>
+    # 🔍 Detection Classes Info (Improved)
+    detection_classes_html = """
+    <div style="background: rgba(255,255,255,0.08); padding: 1rem 1.2rem; border-radius: 12px; margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.13);">
+        <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.7rem; color: #fff; letter-spacing: 0.5px;">
+            <span style="font-size:1.2em; vertical-align:middle;">🔍</span> Detection Classes
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Hardhat</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
+            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Mask</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
+            <div><span style="font-size:1.2em; vertical-align:middle;">🔴</span> <b>NO-Hardhat</b> <span style="color:#ffb3b3; font-size:0.95em;">(Violation)</span></div>
+            <div><span style="font-size:1.2em; vertical-align:middle;">🔴</span> <b>NO-Mask</b> <span style="color:#ffb3b3; font-size:0.95em;">(Violation)</span></div>
+            <div><span style="font-size:1.2em; vertical-align:middle;">🔴</span> <b>NO-Safety Vest</b> <span style="color:#ffb3b3; font-size:0.95em;">(Violation)</span></div>
+            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Person</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
+            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Safety Cone</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
+            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Safety Vest</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
+            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>machinery</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
+            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>vehicle</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
+        </div>
     </div>
-    """, unsafe_allow_html=True)
-    
-    classes = ['Hardhat', 'Mask', 'NO-Hardhat', 'NO-Mask', 'NO-Safety Vest', 
-               'Person', 'Safety Cone', 'Safety Vest', 'machinery', 'vehicle']
-    
-    for i, class_name in enumerate(classes):
-        if "NO-" in class_name:
-            st.markdown(f"🔴 {class_name} (Violation)")
-        else:
-            st.markdown(f"🟢 {class_name} (Compliant)")
+    """
+    st.markdown(detection_classes_html, unsafe_allow_html=True)
 
 # 📊 Dashboard View
 if option == "📊 Dashboard":
@@ -251,15 +271,16 @@ if option == "📊 Dashboard":
         'Speed': [45, 52, 38, 61, 42]
     }
     fig = px.bar(performance_data, x='Class', y='Accuracy',
-                 title="Detection Accuracy by Class",
-                 color='Accuracy',
-                 color_continuous_scale='viridis')
+                 title="Detection Accuracy by Class")
     fig.update_layout(
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font=dict(color='white'),
-        title_font_color='white'
+        title_font_color='white',
+        xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+        yaxis=dict(gridcolor='rgba(255,255,255,0.1)')
     )
+    fig.update_traces(marker_color='#667eea')
     st.plotly_chart(fig, use_container_width=True)
     st.markdown("""
     <div class="feature-grid">
@@ -309,24 +330,18 @@ elif option == "📷 Single Image":
                 st.image(image, caption="Original Image (No Detection Available)", use_container_width=True)
             else:
                 try:
-                    img_array = np.array(image.convert("RGB"))
-                    results = model(img_array)
-                    # Draw boxes for display
-                    result_img = img_array.copy()
-                    if results and len(results) > 0 and hasattr(results[0], 'boxes') and results[0].boxes is not None:
-                        boxes = results[0].boxes.xyxy.cpu().numpy()
-                        confs = results[0].boxes.conf.cpu().numpy()
-                        clss = results[0].boxes.cls.cpu().numpy().astype(int)
-                        for box, conf, cls in zip(boxes, confs, clss):
-                            x1, y1, x2, y2 = map(int, box)
-                            label = model.names[cls] if hasattr(model, 'names') and cls < len(model.names) else str(cls)
-                            color = (0, 255, 0) if 'NO-' not in label else (0, 0, 255)
-                            cv2.rectangle(result_img, (x1, y1), (x2, y2), color, 2)
-                            cv2.putText(result_img, f'{label} {conf:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
-                    st.image(result_img, caption="Detected Objects", use_container_width=True)
+                    with st.spinner("🔍 Processing image..."):
+                        result_img = predict_image(model, image)
+                        st.image(result_img, caption="Detected Objects", use_container_width=True)
+                        
+                        # Show detection summary
+                        img_array = np.array(image.convert("RGB"))
+                        results = model(img_array)
+                        summary = get_detection_summary(results)
+                        st.info(f"📊 Detection Summary: {summary}")
                 except Exception as e:
-                    st.warning(f"Detection failed: {e}")
-                    st.image(image, caption="Detected Objects (No Detection)", use_container_width=True)
+                    st.error(f"Detection failed: {e}")
+                    st.image(image, caption="Original Image (Detection Failed)", use_container_width=True)
 
 # 🗂️ Multiple Image Upload with Enhanced UI
 elif option == "📁 Batch Processing":
@@ -365,16 +380,20 @@ elif option == "📁 Batch Processing":
                     st.error("Model not loaded. Please ensure app/models/best.pt exists and is valid.")
                     st.image(image, caption=f"Original - {image_file.name} (No Detection Available)", use_container_width=True)
                 else:
-                    with st.spinner(f"🔍 Processing {image_file.name}..."):
-                        result_img = predict_image(model, image)
-                        
-                        # Get detection summary
-                        img_array = np.array(image.convert("RGB"))
-                        results = model(img_array)
-                        summary = get_detection_summary(results)
-                        
-                        st.image(result_img, caption=f"Detected - {image_file.name}", use_container_width=True)
-                        st.markdown(f"**📊 Summary:** {summary}")
+                    try:
+                        with st.spinner(f"🔍 Processing {image_file.name}..."):
+                            result_img = predict_image(model, image)
+                            
+                            # Get detection summary
+                            img_array = np.array(image.convert("RGB"))
+                            results = model(img_array)
+                            summary = get_detection_summary(results)
+                            
+                            st.image(result_img, caption=f"Detected - {image_file.name}", use_container_width=True)
+                            st.markdown(f"**📊 Summary:** {summary}")
+                    except Exception as e:
+                        st.error(f"Failed to process {image_file.name}: {e}")
+                        st.image(image, caption=f"Original - {image_file.name} (Processing Failed)", use_container_width=True)
             
             st.markdown("---")
         
@@ -403,16 +422,18 @@ elif option == "📹 Real-time Webcam":
             st.error("Model not loaded. Please ensure app/models/best.pt exists and is valid.")
             st.session_state["webcam_active"] = False
         else:
-            from src.inference import webrtc_streamer, get_or_create_transformer
-            webrtc_streamer(
-                key="yolo-webcam",
-                video_transformer_factory=lambda: get_or_create_transformer(model),
-                media_stream_constraints={"video": {"width": 640, "height": 480}, "audio": False},
-                async_transform=True,
-            )
-            if st.button("🛑 Stop Webcam Detection", key="stop_webcam_portfolio"):
+            try:
+                from src.inference import predict_webcam
+                predict_webcam(model)
+                
+                if st.button("🛑 Stop Webcam Detection", key="stop_webcam_portfolio"):
+                    st.session_state["webcam_active"] = False
+                    st.rerun()
+                    
+            except Exception as e:
+                st.error(f"Webcam error: {e}")
+                st.info("💡 If webcam doesn't work, try refreshing the page or check browser permissions.")
                 st.session_state["webcam_active"] = False
-                st.rerun()
 
 # 📊 Footer with Portfolio Information
 st.markdown("---")
