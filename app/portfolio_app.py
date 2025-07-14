@@ -310,8 +310,13 @@ if option == "📊 Dashboard":
         'Accuracy': [96.5, 94.2, 92.8, 89.5, 87.3],
         'Speed': [45, 52, 38, 61, 42]
     }
-    fig = px.bar(performance_data, x='Class', y='Accuracy',
-                 title="Detection Accuracy by Class")
+    colors = ['#667eea', '#764ba2', '#4facfe', '#19d219', '#e53935']  # Custom palette
+    fig = px.bar(
+        performance_data, x='Class', y='Accuracy',
+        title="Detection Accuracy by Class",
+        color='Class',
+        color_discrete_sequence=colors
+    )
     fig.update_layout(
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
@@ -320,7 +325,6 @@ if option == "📊 Dashboard":
         xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
         yaxis=dict(gridcolor='rgba(255,255,255,0.1)')
     )
-    fig.update_traces(marker_color='#667eea')
     st.plotly_chart(fig, use_container_width=True)
     st.markdown("""
     <div class="feature-grid">
