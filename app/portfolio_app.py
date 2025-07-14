@@ -208,23 +208,63 @@ with st.sidebar:
     with col2:
         st.metric("Detection Rate", "94.2%", "+2.1%")
     
-    # 🔍 Detection Classes Info (Improved)
+    # 🔍 Detection Classes Info (Clean, single-line)
     detection_classes_html = """
     <div style="background: rgba(255,255,255,0.08); padding: 1rem 1.2rem; border-radius: 12px; margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.13);">
         <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.7rem; color: #fff; letter-spacing: 0.5px;">
             <span style="font-size:1.2em; vertical-align:middle;">🔍</span> Detection Classes
         </div>
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Hardhat</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
-            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Mask</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
-            <div><span style="font-size:1.2em; vertical-align:middle;">🔴</span> <b>NO-Hardhat</b> <span style="color:#ffb3b3; font-size:0.95em;">(Violation)</span></div>
-            <div><span style="font-size:1.2em; vertical-align:middle;">🔴</span> <b>NO-Mask</b> <span style="color:#ffb3b3; font-size:0.95em;">(Violation)</span></div>
-            <div><span style="font-size:1.2em; vertical-align:middle;">🔴</span> <b>NO-Safety Vest</b> <span style="color:#ffb3b3; font-size:0.95em;">(Violation)</span></div>
-            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Person</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
-            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Safety Cone</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
-            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>Safety Vest</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
-            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>machinery</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
-            <div><span style="font-size:1.2em; vertical-align:middle;">🟢</span> <b>vehicle</b> <span style="color:#b8c5d1; font-size:0.95em;">(Compliant)</span></div>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🟢</span>
+                <span style="font-weight:600;">Hardhat</span>
+                <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🟢</span>
+                <span style="font-weight:600;">Mask</span>
+                <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🔴</span>
+                <span style="font-weight:600;">NO-Hardhat</span>
+                <span style="color:#ffb3b3; font-size:0.97em; margin-left:auto;">(Violation)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🔴</span>
+                <span style="font-weight:600;">NO-Mask</span>
+                <span style="color:#ffb3b3; font-size:0.97em; margin-left:auto;">(Violation)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🔴</span>
+                <span style="font-weight:600;">NO-Safety Vest</span>
+                <span style="color:#ffb3b3; font-size:0.97em; margin-left:auto;">(Violation)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🟢</span>
+                <span style="font-weight:600;">Person</span>
+                <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🟢</span>
+                <span style="font-weight:600;">Safety Cone</span>
+                <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🟢</span>
+                <span style="font-weight:600;">Safety Vest</span>
+                <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🟢</span>
+                <span style="font-weight:600;">machinery</span>
+                <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5em;">
+                <span style="font-size:1.2em;">🟢</span>
+                <span style="font-weight:600;">vehicle</span>
+                <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
+            </div>
         </div>
     </div>
     """
