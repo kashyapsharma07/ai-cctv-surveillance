@@ -7,6 +7,7 @@ import time
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
 from av.video.frame import VideoFrame
+import os
 
 # Class names for the PPE dataset
 CLASS_NAMES = ['Hardhat', 'Mask', 'NO-Hardhat', 'NO-Mask', 'NO-Safety Vest', 
@@ -30,7 +31,8 @@ def predict_image(model, image):
     """
     try:
         img_array = np.array(image.convert("RGB"))
-        results = model(img_array)
+        # Lower confidence threshold to 0.3
+        results = model(img_array, conf=0.3)
 
         # Draw bounding boxes and labels manually
         if results and len(results) > 0 and hasattr(results[0], 'boxes') and results[0].boxes is not None:
@@ -54,23 +56,36 @@ def predict_image(model, image):
 class YOLOVideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.model = None
+        self.frame_count = 0
+        self.last_results = None
 
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        if self.model is not None:
-            results = self.model(img)
-            if results and len(results) > 0 and hasattr(results[0], 'boxes') and results[0].boxes is not None:
-                boxes = results[0].boxes.xyxy.cpu().numpy()
-                confs = results[0].boxes.conf.cpu().numpy()
-                clss = results[0].boxes.cls.cpu().numpy().astype(int)
-                print(f"[DEBUG] Detected classes: {clss}")
-                print(f"[DEBUG] Confidences: {confs}")
-                for box, conf, cls in zip(boxes, confs, clss):
-                    x1, y1, x2, y2 = map(int, box)
-                    label = self.model.names[cls] if hasattr(self.model, 'names') and cls < len(self.model.names) else str(cls)
-                    color = (0, 255, 0) if 'NO-' not in label else (0, 0, 255)
-                    cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
-                    cv2.putText(img, f'{label} {conf:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+        self.frame_count += 1
+        # Resize for even faster inference
+        img_resized = cv2.resize(img, (224, 224))
+        # Only run detection every 5th frame
+        if self.frame_count % 5 == 0 or self.last_results is None:
+            if self.model is not None:
+                self.last_results = self.model(img_resized, conf=0.3)
+        # Draw boxes on the original frame size for display
+        if self.last_results and len(self.last_results) > 0 and hasattr(self.last_results[0], 'boxes') and self.last_results[0].boxes is not None:
+            boxes = self.last_results[0].boxes.xyxy.cpu().numpy()
+            confs = self.last_results[0].boxes.conf.cpu().numpy()
+            clss = self.last_results[0].boxes.cls.cpu().numpy().astype(int)
+            # Scale boxes back to original image size
+            x_scale = img.shape[1] / 224
+            y_scale = img.shape[0] / 224
+            for box, conf, cls in zip(boxes, confs, clss):
+                x1, y1, x2, y2 = box
+                x1 = int(x1 * x_scale)
+                y1 = int(y1 * y_scale)
+                x2 = int(x2 * x_scale)
+                y2 = int(y2 * y_scale)
+                label = self.model.names[cls] if hasattr(self.model, 'names') and cls < len(self.model.names) else str(cls)
+                color = (0, 255, 0) if 'NO-' not in label else (0, 0, 255)
+                cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+                cv2.putText(img, f'{label} {conf:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
         return VideoFrame.from_ndarray(img, format="bgr24")
 
 def get_or_create_transformer(model):
@@ -88,6 +103,21 @@ def predict_webcam(model):
         video_transformer_factory=lambda: get_or_create_transformer(model),
         media_stream_constraints={"video": True, "audio": False},
         async_transform=True,
+        rtc_configuration={
+            "iceServers": [
+                {"urls": [
+                    "stun:stun.l.google.com:19302",
+                    "stun:stun1.l.google.com:19302",
+                    "stun:stun2.l.google.com:19302",
+                    "stun:stun3.l.google.com:19302",
+                    "stun:stun4.l.google.com:19302"
+                ]}
+            ] + ([{
+                "urls": os.environ.get("TURN_URL"),
+                "username": os.environ.get("TURN_USERNAME"),
+                "credential": os.environ.get("TURN_CREDENTIAL")
+            }] if os.environ.get("TURN_URL") else [])
+        },
     )
 
 def get_detection_summary(results):

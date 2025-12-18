@@ -6,20 +6,20 @@ import numpy as np
 import plotly.express as px
 import cv2
 
-# Startup message for debugging
-st.write("🚀 App loading... Please wait for model initialization.")
-
-# ✅ Add parent directory to Python path BEFORE importing from src
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.inference import load_model, predict_image, predict_webcam, get_detection_summary
-
-# 🎨 Premium Page Configuration
+# 🎨 Premium Page Configuration (MUST BE FIRST Streamlit command)
 st.set_page_config(
     page_title="AI CCTV Surveillance System",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# Startup message for debugging
+st.write("🚀 App loading... Please wait for model initialization.")
+
+# ✅ Add parent directory to Python path BEFORE importing from src
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.inference import load_model, predict_image, predict_webcam, get_detection_summary
 
 # 🎨 Premium CSS with Animations
 st.markdown("""
@@ -208,61 +208,61 @@ with st.sidebar:
     with col2:
         st.metric("Detection Rate", "94.2%", "+2.1%")
     
-    # 🔍 Detection Classes Info (Clean, single-line)
+    # 🔍 Detection Classes Info (No wrap, no overflow)
     detection_classes_html = """
-    <div style="background: rgba(255,255,255,0.08); padding: 1rem 1.2rem; border-radius: 12px; margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.13);">
-        <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.7rem; color: #fff; letter-spacing: 0.5px;">
-            <span style="font-size:1.2em; vertical-align:middle;">🔍</span> Detection Classes
+    <div style="background: rgba(255,255,255,0.08); padding: 1.1rem 1.2rem; border-radius: 12px; margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.13);">
+        <div style="font-weight: 700; font-size: 1.08rem; margin-bottom: 0.8rem; color: #fff; letter-spacing: 0.5px;">
+            <span style="font-size:1.1em; vertical-align:middle;">🔍</span> Detection Classes
         </div>
-        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🟢</span>
-                <span style="font-weight:600;">Hardhat</span>
+        <div style="display: flex; flex-direction: column; gap: 0.38rem;">
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#19d219;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">Hardhat</span>
                 <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🟢</span>
-                <span style="font-weight:600;">Mask</span>
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#19d219;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">Mask</span>
                 <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🔴</span>
-                <span style="font-weight:600;">NO-Hardhat</span>
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#e53935;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">NO-Hardhat</span>
                 <span style="color:#ffb3b3; font-size:0.97em; margin-left:auto;">(Violation)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🔴</span>
-                <span style="font-weight:600;">NO-Mask</span>
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#e53935;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">NO-Mask</span>
                 <span style="color:#ffb3b3; font-size:0.97em; margin-left:auto;">(Violation)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🔴</span>
-                <span style="font-weight:600;">NO-Safety Vest</span>
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#e53935;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">NO-Safety Vest</span>
                 <span style="color:#ffb3b3; font-size:0.97em; margin-left:auto;">(Violation)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🟢</span>
-                <span style="font-weight:600;">Person</span>
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#19d219;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">Person</span>
                 <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🟢</span>
-                <span style="font-weight:600;">Safety Cone</span>
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#19d219;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">Safety Cone</span>
                 <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🟢</span>
-                <span style="font-weight:600;">Safety Vest</span>
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#19d219;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">Safety Vest</span>
                 <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🟢</span>
-                <span style="font-weight:600;">machinery</span>
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#19d219;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">machinery</span>
                 <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5em;">
-                <span style="font-size:1.2em;">🟢</span>
-                <span style="font-weight:600;">vehicle</span>
+            <div style="display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:#19d219;margin-right:0.5em;flex-shrink:0;"></span>
+                <span style="font-weight:600; margin-right:0.4em;">vehicle</span>
                 <span style="color:#b8c5d1; font-size:0.97em; margin-left:auto;">(Compliant)</span>
             </div>
         </div>
@@ -310,8 +310,13 @@ if option == "📊 Dashboard":
         'Accuracy': [96.5, 94.2, 92.8, 89.5, 87.3],
         'Speed': [45, 52, 38, 61, 42]
     }
-    fig = px.bar(performance_data, x='Class', y='Accuracy',
-                 title="Detection Accuracy by Class")
+    colors = ['#667eea', '#764ba2', '#4facfe', '#19d219', '#e53935']  # Custom palette
+    fig = px.bar(
+        performance_data, x='Class', y='Accuracy',
+        title="Detection Accuracy by Class",
+        color='Class',
+        color_discrete_sequence=colors
+    )
     fig.update_layout(
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
@@ -320,7 +325,6 @@ if option == "📊 Dashboard":
         xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
         yaxis=dict(gridcolor='rgba(255,255,255,0.1)')
     )
-    fig.update_traces(marker_color='#667eea')
     st.plotly_chart(fig, use_container_width=True)
     st.markdown("""
     <div class="feature-grid">
