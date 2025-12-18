@@ -48,6 +48,7 @@ Thumbs.db
 *.zip
 datasets/
 dataset/
+Construction site safety dataset/
 
 # Training outputs
 runs/
